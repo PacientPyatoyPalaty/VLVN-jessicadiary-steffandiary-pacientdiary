@@ -1036,52 +1036,7 @@ sup {
     text-transform: uppercase;
     line-height: 1.6;
 }
-                              СНОСКА АЛЬБЫ
-/* Стиль ссылки на сноску */
-.footnote-link {
-    color: #b89b5e;
-    text-decoration: none;
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: bold;
-    margin-left: 5px;
-    vertical-align: super;
-    font-size: 0.8em;
-    transition: opacity 0.3s;
-}
 
-.footnote-link:hover {
-    opacity: 0.7;
-}
-
-/* Контейнер самой сноски */
-.footnote-content {
-    margin: 40px auto;
-    padding: 20px;
-    max-width: 800px;
-    border-top: 1px solid rgba(184, 155, 94, 0.3); /* Тонкая золотистая линия */
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1em;
-    line-height: 1.6;
-    color: #555; /* Мягкий цвет для второстепенного текста */
-    text-align: justify;
-}
-
-.footnote-number {
-    color: #b89b5e;
-    font-weight: bold;
-    margin-right: 10px;
-}
-
-/* Плавный переход при клике на сноску */
-#alba-note:target {
-    background-color: rgba(184, 155, 94, 0.05);
-    animation: highlight 2s ease-out;
-}
-
-@keyframes highlight {
-    from { background-color: rgba(184, 155, 94, 0.2); }
-    to { background-color: transparent; }
-}
 
 /* =========================================
    1. БАЗА (Только каркас: отступы, шрифты, позиционирование)

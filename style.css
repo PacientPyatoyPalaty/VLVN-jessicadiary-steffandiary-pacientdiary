@@ -384,6 +384,27 @@ sup {
     }
 }
 
+/* 1. Прячем крестик, когда сайдбар открыт, чтобы он не мешал кнопке "Главная" */
+    .mobile-menu-btn.active {
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    /* 2. Добавляем элегантный золотой язычок для свайпа на краю сайдбара */
+    .sidebar::after {
+        content: '';
+        position: absolute;
+        right: 10px; /* Прижимаем к правому краю сайдбара */
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 45px;
+        background-color: var(--gold-dim);
+        border-radius: 2px;
+        opacity: 0.5;
+        box-shadow: 0 0 5px rgba(197, 160, 89, 0.2);
+    }
+
 /* Общая эстетика сайдбара */
 .elegant-sidebar {
     font-family: 'Cormorant Garamond', serif;

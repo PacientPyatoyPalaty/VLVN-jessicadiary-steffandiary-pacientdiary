@@ -348,11 +348,39 @@ document.addEventListener('touchend', e => {
 // === 10. МОБИЛЬНОЕ МЕНЮ И УПРАВЛЕНИЕ ОКНАМИ ===
 const mobileBtn = document.getElementById('mobile-menu-btn');
 const sidebar = document.querySelector('.sidebar');
+const bookViewport = document.querySelector('.book-viewport');
+
 if (mobileBtn && sidebar) {
+    // Открытие по кнопке
     mobileBtn.addEventListener('click', () => {
         mobileBtn.classList.toggle('active');
         sidebar.classList.toggle('mobile-open');
     });
+
+    // 1. Закрытие свайпом влево по самому сайдбару
+    let sidebarTouchStartX = 0;
+    sidebar.addEventListener('touchstart', (e) => {
+        sidebarTouchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+
+    sidebar.addEventListener('touchend', (e) => {
+        let sidebarTouchEndX = e.changedTouches[0].clientX;
+        // Если палец скользнул влево более чем на 50 пикселей
+        if (sidebarTouchStartX - sidebarTouchEndX > 50) {
+            sidebar.classList.remove('mobile-open');
+            mobileBtn.classList.remove('active');
+        }
+    }, { passive: true });
+
+    // 2. Элегантное закрытие при касании мимо меню (по тексту книги)
+    if (bookViewport) {
+        bookViewport.addEventListener('click', () => {
+            if (sidebar.classList.contains('mobile-open')) {
+                sidebar.classList.remove('mobile-open');
+                mobileBtn.classList.remove('active');
+            }
+        });
+    }
 }
 
     // Кнопки возврата в меню

@@ -296,43 +296,64 @@ const accordionHeaders = document.querySelectorAll('.accordion-header');
     }
 
 // === 9. ГЛОБАЛЬНАЯ НАВИГАЦИЯ (КЛАВИАТУРА И СВАЙПЫ) ===
-    document.addEventListener('keydown', (e) => {
-        if (!isGalleryClosed()) return;
-        if (e.key === 'ArrowLeft') {
-            document.getElementById('zone-prev')?.click();
-        } else if (e.key === 'ArrowRight') {
-            document.getElementById('zone-next')?.click();
-        }
-    });
 
-    document.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
+// 1. Объявляем переменные в начале (чтобы они были доступны всем функциям)
+let touchStartY = 0;
+let touchEndY = 0;
 
-    document.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        if (!isGalleryClosed()) return;
-        
-        const swipeThreshold = 70;
-        // Свайп влево (палец идет влево -> страница вперед)
-        if (touchEndX < touchStartX - swipeThreshold) {
-            document.getElementById('zone-next')?.click();
-        }
-        // Свайп вправо (палец идет вправо -> страница назад)
-        if (touchEndX > touchStartX + swipeThreshold) {
-            document.getElementById('zone-prev')?.click();
-        }
-    }, { passive: true });
-
-    // === 10. МОБИЛЬНОЕ МЕНЮ И УПРАВЛЕНИЕ ОКНАМИ ===
-    const mobileBtn = document.getElementById('mobile-menu-btn');
-    const sidebar = document.querySelector('.sidebar');
-    if (mobileBtn && sidebar) {
-        mobileBtn.addEventListener('click', () => {
-            mobileBtn.classList.toggle('active');
-            sidebar.classList.toggle('mobile-open');
-        });
+// Управление клавиатурой
+document.addEventListener('keydown', (e) => {
+    if (!isGalleryClosed()) return;
+    if (e.key === 'ArrowLeft') {
+        document.getElementById('zone-prev')?.click();
+    } else if (e.key === 'ArrowRight') {
+        document.getElementById('zone-next')?.click();
     }
+});
+
+// Начало касания
+document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+}, { passive: true });
+
+// Конец касания
+document.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].clientX;
+    touchEndY = e.changedTouches[0].clientY;
+
+    // Если галерея открыта — свайпы книги не работают
+    if (!isGalleryClosed()) return;
+    
+    const swipeDistanceX = touchEndX - touchStartX;
+    const swipeDistanceY = touchEndY - touchStartY;
+    const swipeThreshold = 120; // Уверенный порог для «маха» пальцем
+
+    // МАГИЯ ЗАЩИТЫ: 
+    // Листаем только если:
+    // 1. Длина маха по горизонтали больше порога (120px)
+    // 2. Движение по горизонтали (X) минимум в ДВА раза сильнее, чем по вертикали (Y)
+    // Это гарантирует, что обычный скролл вверх/вниз не перелистнет страницу
+    if (Math.abs(swipeDistanceX) > swipeThreshold && Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY) * 2) {
+        if (swipeDistanceX < 0) {
+            // Палец шел влево — страница вперед
+            document.getElementById('zone-next')?.click();
+        } else {
+            // Палец шел вправо — страница назад
+            document.getElementById('zone-prev')?.click();
+        }
+    }
+}, { passive: true });
+
+// === 10. МОБИЛЬНОЕ МЕНЮ И УПРАВЛЕНИЕ ОКНАМИ ===
+const mobileBtn = document.getElementById('mobile-menu-btn');
+const sidebar = document.querySelector('.sidebar');
+if (mobileBtn && sidebar) {
+    mobileBtn.addEventListener('click', () => {
+        mobileBtn.classList.toggle('active');
+        sidebar.classList.toggle('mobile-open');
+    });
+}
 
     // Кнопки возврата в меню
     document.getElementById('btn-to-main-landing')?.addEventListener('click', function() {
@@ -447,4 +468,4 @@ function preloadNextChapter() {
 // чтобы не тормозить начальную загрузку страницы
 setTimeout(preloadNextChapter, 3000);
 
-}); 
+});

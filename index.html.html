@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ВЛВН — Пациент пятой палаты</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="menu.css">
+</head>
+<body>
+
+    <div id="screen-intro" class="screen active">
+        <div class="intro-titles">
+            <h1>ВЛВН</h1>
+            <div class="intro-sub">Воплощение любви в обмен на...</div>
+        </div>
+        
+        <div class="intro-action">
+            <div class="click-dive" id="btn-dive">Погрузиться в историю</div>
+            <div class="hint">нажмите, чтобы начать</div>
+        </div>
+
+        <div class="intro-author">by Пациент пятой палаты</div>
+    </div>
+
+    <div id="screen-loading" class="screen"></div>
+
+    <div id="screen-menu" class="screen">
+        <h2>Выберите книгу</h2>
+        <ul class="book-list">
+            <li class="book-item" id="book-1">
+                <span class="book-title">Книга первая. Дневник Джессики</span>
+                <div class="book-details">
+                    <p><strong>Жанр:</strong> гибрид, квантовый психологический триллер в форме современного эпистолярного романа с элементами мета-детектива, New Adult.</p>
+                    <p><strong>Поджанр:</strong> философская драма, психологический хоррор с элементами Dark Romance и Dark Academia, подростковый нуар.</p>
+                </div>
+            </li>
+            <li class="book-item"><span class="book-title">Книга вторая. Дневник Стефана Стивенсона</span></li>
+            <li class="book-item"><span class="book-title">Книга третья. Дневник Пациента пятой палаты</span></li>
+        </ul>
+    </div>
+
+    <script src="menu.js"></script>
+</body>
+</html>

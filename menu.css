@@ -1,0 +1,281 @@
+:root {
+    --bg-color: #0d0d0d;
+    --gold: #c5a059;
+    --gold-dim: #8a6d3b;
+    --text-color: #e0e0e0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #000;
+    color: var(--text-color);
+    font-family: 'Cormorant Garamond', serif;
+    overflow: hidden; 
+    user-select: none;
+    opacity: 0;
+    animation: fadeInSite 2.5s ease-in-out forwards;
+    transition: background 2s ease;
+}
+
+@keyframes fadeInSite {
+    to { opacity: 1; }
+}
+
+/* === УПРАВЛЕНИЕ ЭКРАНАМИ === */
+.screen {
+    display: none;
+    min-height: 100vh;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0; left: 0;
+}
+
+.screen.active {
+    display: flex;
+    opacity: 1;
+    z-index: 10;
+}
+
+/* === ЭКРАН 1: ИНТРО === */
+#screen-intro {
+    justify-content: center;
+}
+
+.intro-titles {
+    text-align: center;
+    margin-bottom: 12vh;
+}
+
+#screen-intro h1 {
+    font-size: 8.5rem;
+    font-weight: 700; 
+    letter-spacing: 20px;
+    margin-bottom: -15px; 
+    
+    background: linear-gradient(to bottom, #f5d78d 0%, #c5a059 40%, #8a6d3b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.9));
+}
+
+.intro-sub { 
+    font-family: 'Great Vibes', cursive; 
+    font-size: 3.5rem; 
+    color: #e3cca1;
+    opacity: 0.9;
+}
+
+.intro-action {
+    text-align: center;
+}
+
+.click-dive {
+    font-size: 2rem; 
+    color: var(--gold); 
+    cursor: pointer;
+    text-transform: uppercase; 
+    letter-spacing: 5px;
+    transition: text-shadow 0.3s, transform 0.3s;
+    animation: pulseDive 3s infinite ease-in-out;
+}
+
+.click-dive:hover { 
+    text-shadow: 0 0 25px rgba(197, 160, 89, 1); 
+    transform: scale(1.05); 
+    animation-play-state: paused;
+}
+
+@keyframes pulseDive {
+    0%, 100% { opacity: 0.8; text-shadow: 0 0 5px rgba(197, 160, 89, 0.4); }
+    50% { opacity: 1; text-shadow: 0 0 18px rgba(197, 160, 89, 0.9); }
+}
+
+.hint { 
+    font-size: 1rem; 
+    margin-top: 15px; 
+    font-style: italic; 
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 1px;
+    animation: pulseHint 2s infinite ease-in-out;
+}
+
+@keyframes pulseHint {
+    0% { opacity: 0.2; }
+    50% { opacity: 0.9; text-shadow: 0 0 10px rgba(255, 255, 255, 0.6); }
+    100% { opacity: 0.2; }
+}
+
+/* === ЭФФЕКТ ПРОЛЕТА СКВОЗЬ ЭКРАН === */
+.diving-through {
+    animation: diveThrough 1.5s cubic-bezier(0.5, 0, 0.1, 1) forwards;
+    pointer-events: none;
+}
+
+@keyframes diveThrough {
+    0% { transform: scale(1); opacity: 1; filter: blur(0); }
+    40% { opacity: 1; }
+    100% { transform: scale(15); opacity: 0; filter: blur(8px); }
+}
+
+.intro-author { 
+    position: absolute;
+    bottom: 40px;
+    font-size: 1.2rem; 
+    color: var(--gold-dim); 
+    letter-spacing: 3px;
+}
+
+/* === ЭКРАН 2: ЗАГРУЗКА (Эффект полета сквозь имена) === */
+#screen-loading { 
+    background-color: black; 
+    overflow: hidden; 
+    perspective: 1000px;
+    perspective-origin: center center;
+}
+
+.floating-name {
+    position: absolute; 
+    color: rgba(197, 160, 89, 0.8);
+    font-size: 2rem; 
+    font-style: italic; 
+    font-weight: 700;
+    opacity: 0;
+    text-transform: uppercase;
+    white-space: nowrap;
+    animation-name: flyThrough;
+    animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+    animation-fill-mode: forwards;
+}
+
+@keyframes flyThrough {
+    0% { transform: translate3d(0, 0, -1500px) scale(0.5); opacity: 0; }
+    20% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { transform: translate3d(0, 0, 800px) scale(4); opacity: 0; }
+}
+
+/* === ЭКРАН 3: МЕНЮ === */
+#screen-menu h2 {
+    font-size: 3rem;
+    color: var(--gold);
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--gold-dim);
+    padding-bottom: 10px;
+}
+
+.book-list {
+    list-style: none;
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+.book-item {
+    margin: 20px 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.book-title {
+    font-size: 1.8rem;
+    transition: color 0.4s, transform 0.4s;
+    display: inline-block;
+}
+
+.book-item:hover .book-title {
+    color: var(--gold);
+    transform: translateX(10px);
+}
+
+.book-details {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.6s ease, opacity 0.6s ease, margin-top 0.6s ease;
+    width: 90%;
+    text-align: center;
+}
+
+.book-item:hover .book-details {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 15px;
+}
+
+.book-details p {
+    font-size: 1.1rem;
+    color: #a0a0a0;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    font-style: italic;
+}
+
+.book-details strong {
+    color: var(--gold-dim);
+    font-weight: 600;
+    font-style: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+/* === ТИТУЛЬНЫЙ БРЕНДИНГ ВЛВН В МЕНЮ === */
+
+.intro-titles {
+    text-align: center;
+    margin-bottom: 100px;
+}
+
+/* Сама аббревиатура ВЛВН */
+.intro-titles h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 6rem; /* Делаем её действительно огромной */
+    font-weight: 400;
+    color: var(--gold);
+    letter-spacing: 25px; /* Очень широкий разнос букв для эффекта элитарности */
+    margin-right: -25px; /* Компенсируем отступ последней буквы для идеального центра */
+    margin-bottom: 0;
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(197, 160, 89, 0.2); /* Легкое золотое свечение */
+}
+
+/* Расшифровка (Воплощение любви в обмен на...) */
+.intro-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.7rem; /* Делаем её крошечной по сравнению с ВЛВН */
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    letter-spacing: 8px; /* Растягиваем строку, чтобы она гармонировала с шириной ВЛВН */
+    opacity: 0.6;
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+#screen-intro {
+    /* Добавляем путь к фото и накладываем градиентное затемнение */
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), 
+                url('cover-0.png'); /* Проверь расширение файла (png или jpg) */
+    
+    background-size: cover;         /* Растягиваем на весь экран */
+    background-position: center;    /* Центрируем изображение */
+    background-repeat: no-repeat;
+    background-attachment: fixed;   /* Делает фон неподвижным, добавляя "веса" */
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

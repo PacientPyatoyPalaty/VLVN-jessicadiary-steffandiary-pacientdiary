@@ -915,6 +915,24 @@ sup {
     text-align: right; /* Хорошо смотрится справа, как подпись или пометка на полях */
 }
 
+                  Все права защищены
+.sidebar-footer {
+    margin-top: auto; /* Выталкивает блок в самый низ сайдбара */
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.copyright-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.65rem; /* Крошечный, изящный размер */
+    color: var(--gold-dim);
+    opacity: 0.4; /* Делаем текст приглушенным */
+    letter-spacing: 1.5px; /* Благородный разнос букв */
+    text-transform: uppercase;
+    line-height: 1.6;
+    pointer-events: none; /* Чтобы текст не мешал свайпам */
+}
+
 /* === ВЕРХНЯЯ ПАНЕЛЬ САЙДБАРА (ДВА КВАДРАТА) === */
 .sidebar-top-panel {
     display: flex;
@@ -989,6 +1007,35 @@ sup {
     text-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
+
+ ВСЕ ПРАВА ЗАЩИЩЕНЫ
+/* Делаем сайдбар умной колонкой, которая выталкивает футер вниз */
+.sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+}
+
+/* Навигация забирает всё свободное место сверху */
+.sidebar nav {
+    flex: 1 !important;
+}
+
+/* Оформление самой надписи внизу */
+.sidebar-footer {
+    padding: 20px 10px;
+    text-align: center;
+}
+
+.copyright-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.65rem;
+    color: var(--gold-dim);
+    opacity: 0.4;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    line-height: 1.6;
+}
 
 /* =========================================
    1. БАЗА (Только каркас: отступы, шрифты, позиционирование)

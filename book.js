@@ -345,6 +345,29 @@ document.addEventListener('touchend', e => {
     }
 }, { passive: true });
 
+
+// === АВТОМАТИЧЕСКОЕ СКРЫТИЕ ПОДСКАЗКИ ПРИ ПОЛНОМ ЭКРАНЕ ===
+document.addEventListener('fullscreenchange', () => {
+    // Укажите здесь ID или класс вашей подсказки
+    const f11Hint = document.querySelector('.f11-hint') || document.querySelector('.fullscreen-prompt'); 
+    
+    if (document.fullscreenElement) {
+        // Если вошли в полноэкранный режим — плавно прячем
+        if (f11Hint) {
+            f11Hint.style.transition = 'opacity 0.5s ease';
+            f11Hint.style.opacity = '0';
+            // Полностью убираем из потока через полсекунды
+            setTimeout(() => { f11Hint.style.display = 'none'; }, 500);
+        }
+    } else {
+        // Если вышли из полноэкранного режима — возвращаем
+        if (f11Hint) {
+            f11Hint.style.display = 'block';
+            setTimeout(() => { f11Hint.style.opacity = '1'; }, 50);
+        }
+    }
+});
+
 // === 10. МОБИЛЬНОЕ МЕНЮ И УПРАВЛЕНИЕ ОКНАМИ ===
 const mobileBtn = document.getElementById('mobile-menu-btn');
 const sidebar = document.querySelector('.sidebar');

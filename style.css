@@ -368,7 +368,20 @@ sup {
     
     .book-viewport { width: 100%; flex: 1; }
     
-    .zone-left { top: 60px; height: calc(100% - 60px); }
+/* Сужаем зоны клика, чтобы они не перекрывали центр (плеер) */
+    .zone-left, .zone-right { 
+        top: 60px; 
+        height: calc(100% - 60px); 
+        width: 15% !important; /* Теперь они занимают только узкие полоски по бокам */
+        z-index: 10; /* Опускаем их чуть ниже плеера */
+    }
+
+    /* Находим ваш Spotify (iframe) и делаем его приоритетным для нажатия */
+    iframe {
+        position: relative;
+        z-index: 100 !important; 
+        pointer-events: auto; /* Гарантируем, что клики проходят */
+    }
 }
 
 /* Общая эстетика сайдбара */

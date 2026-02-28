@@ -348,7 +348,7 @@ const accordionHeaders = document.querySelectorAll('.accordion-header');
             mainLanding.style.display = 'flex'; 
             setTimeout(() => { mainLanding.style.opacity = '1'; }, 50);
         } else {
-            setTimeout(() => { window.location.href = 'menu.html'; }, 1000);
+          setTimeout(() => { window.location.href = 'index.html'; }, 1000);
         }
         if (sidebar) sidebar.classList.remove('active');
     });
@@ -356,7 +356,7 @@ const accordionHeaders = document.querySelectorAll('.accordion-header');
     document.getElementById('btn-back-to-menu')?.addEventListener('click', () => {
         playSound('audio-book-close', 0.8);
         if (theme) fadeAudioOut(theme);
-        setTimeout(() => { window.location.href = 'menu.html?skipIntro=true'; }, 1000);
+          setTimeout(() => { window.location.href = 'index.html?skipIntro=true'; }, 1000);
     });
 
     // Фуллскрин

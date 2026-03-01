@@ -3,11 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileSequence = ['html_0.html', 'html_1.html', 'html_2.html', 'html_3.html', 'html_4.html'];
     let particlesInterval;
     let currentPageIndex = 0;
-    const pages = document.querySelectorAll('.page');
+    let pages = document.querySelectorAll('.page');
     const theme = document.getElementById('audio-hotline');
 
     const currentPath = window.location.pathname;
-    const currentFile = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'html_0.html';
+    let currentFile = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'html_0.html';
     const urlParams = new URLSearchParams(window.location.search);
     const startPage = urlParams.get('page');
 
@@ -194,6 +194,8 @@ if (index < 0) {
                 cover.style.display = 'none';
                 content.classList.add('active');
                 content.style.opacity = '1';
+
+resizeBook(); // <--- ДОБАВИТЬ СЮДА
             } else {
                 cover.style.transition = 'transform 1.5s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 1s ease';
                 cover.style.transformOrigin = 'left center';
@@ -204,68 +206,124 @@ if (index < 0) {
                     cover.classList.remove('active');
                     cover.style.display = 'none';
                     content.classList.add('active');
+resizeBook();
                     setTimeout(() => { content.style.opacity = '1'; }, 50);
                 }, 1000);
             }
         } else {
             content.classList.add('active');
             content.style.opacity = '1';
+resizeBook();
         }
     }
 
-    // === 6. ЛОГИКА САЙДБАРА, АККОРДЕОНА И МАРШРУТИЗАЦИИ ===
-const accordionHeaders = document.querySelectorAll('.accordion-header');
-    accordionHeaders.forEach(header => {
-        header.addEventListener('click', function(e) {
-            if(e.target.hasAttribute('data-target')) return; 
+// === ФИНАЛЬНОЕ И ТОЧНОЕ МАСШТАБИРОВАНИЕ ===
+function resizeBook() {
+    const viewport = document.querySelector('.book-viewport');
+    const book = document.querySelector('.art-book-container');
+    
+    if (!viewport || !book) return;
 
-            const parentItem = this.parentElement; // Текущий <li>
-            const wasActive = parentItem.classList.contains('active');
+    // Твои пропорции. 
+    // Если хочешь, чтобы текст был КРУПНЕЕ — уменьшай baseHeight (например до 900).
+    const baseWidth = 830; 
+    const baseHeight = 950; 
 
-            const siblings = parentItem.parentElement.children;
-            
-            for (let sibling of siblings) {
-                if (sibling !== parentItem) {
-                    sibling.classList.remove('active');
-                }
-            }
+    // Берем размеры вьюпорта, а если он скрыт — берем окно минус сайдбар
+    const availW = viewport.clientWidth || (window.innerWidth - 370);
+    const availH = viewport.clientHeight || window.innerHeight;
 
-            parentItem.classList.toggle('active', !wasActive);
-        });
-    });
+    // Считаем масштаб (0.98 для небольшого запаса)
+    const scale = Math.min(availW / baseWidth, availH / baseHeight) * 0.98;
 
-    document.querySelectorAll('.submenu-list li[data-target]').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.stopPropagation();
-            
-            const targetFile = this.getAttribute('data-file');
-            const targetPage = parseInt(this.getAttribute('data-target'));
-            
-            if (!targetFile || targetFile === currentFile) {
-                if (currentFile === 'html_0.html') showContent(false);
-                goToPage(targetPage);
+    // Жестко применяем стили через JS, чтобы CSS не спорил
+    book.style.position = 'absolute';
+    book.style.top = '0'; 
+    book.style.left = '50%'; 
+    book.style.width = `${baseWidth}px`;
+    book.style.height = `${baseHeight}px`;
+
+    // Применяем масштаб и центровку
+    const finalScale = scale > 0 ? scale : 1;
+    book.style.transformOrigin = 'top center';
+    book.style.transform = `translateX(-50%) scale(${finalScale})`;
+}
+
+// Оставляем слушатели в самом низу
+window.addEventListener('resize', resizeBook);
+window.addEventListener('load', resizeBook);
+setTimeout(resizeBook, 300); // Запасной вызов через 300мс
+
+// === 6 и 7. ЛОГИКА САЙДБАРА, АККОРДЕОНА, МАРШРУТИЗАЦИИ И ЗОН НАВИГАЦИИ ===
+    function attachDynamicEvents() {
+        // Аккордеон
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.onclick = function(e) {
+                if(e.target.hasAttribute('data-target')) return; 
+
+                const parentItem = this.parentElement; // Текущий <li>
+                const wasActive = parentItem.classList.contains('active');
+                const siblings = parentItem.parentElement.children;
                 
-                if (window.innerWidth <= 900) {
-                    document.querySelector('.sidebar')?.classList.remove('mobile-open');
-                    document.getElementById('mobile-menu-btn')?.classList.remove('active');
+                for (let sibling of siblings) {
+                    if (sibling !== parentItem) {
+                        sibling.classList.remove('active');
+                    }
                 }
-                } else {
-    document.body.style.opacity = '0';
-    // Если мы уходим с обложки — ждем 1200мс (пока затихнет звук), иначе — быстро (800мс)
-    const delay = (currentFile === 'html_0.html') ? 1200 : 800; 
-    setTimeout(() => { window.location.href = `${targetFile}?page=${targetPage}`; }, delay);
-          }
+
+                parentItem.classList.toggle('active', !wasActive);
+            };
         });
-    });
 
-    // === 7. НАВИГАЦИОННЫЕ ЗОНЫ ===
-    document.getElementById('zone-prev')?.addEventListener('click', () => {
-        goToPage(currentPageIndex - 1);
-    });
+        // Ссылки меню
+        document.querySelectorAll('.submenu-list li[data-target]').forEach(link => {
+            link.onclick = function(e) {
+                e.stopPropagation();
+                
+                const targetFile = this.getAttribute('data-file');
+                const targetPage = parseInt(this.getAttribute('data-target'));
+                
+                if (!targetFile || targetFile === currentFile) {
+                    if (currentFile === 'html_0.html') showContent(false);
+                    goToPage(targetPage);
+                    
+                    if (window.innerWidth <= 900) {
+                        document.querySelector('.sidebar')?.classList.remove('mobile-open');
+                        document.getElementById('mobile-menu-btn')?.classList.remove('active');
+                    }
+                } else {
+                    // Закрываем мобильное меню при переходе на новую главу
+                    if (window.innerWidth <= 900) {
+                        document.querySelector('.sidebar')?.classList.remove('mobile-open');
+                        document.getElementById('mobile-menu-btn')?.classList.remove('active');
+                    }
+                    
+                    // Плавно подгружаем новый файл без потери Fullscreen
+                    transitionToFile(targetFile, targetPage);
+                }
+            };
+        });
 
-    document.getElementById('zone-next')?.addEventListener('click', () => {
-        goToPage(currentPageIndex + 1);
-    });
+        // Навигационные зоны
+        const zonePrev = document.getElementById('zone-prev');
+        const zoneNext = document.getElementById('zone-next');
+        
+        if (zonePrev) {
+            zonePrev.onclick = () => {
+                goToPage(currentPageIndex - 1);
+            };
+        }
+
+        if (zoneNext) {
+            zoneNext.onclick = () => {
+                goToPage(currentPageIndex + 1);
+            };
+        }
+    }
+
+    // Инициализируем события при первой загрузке
+    attachDynamicEvents();
 
 // === 8. ИНИЦИАЛИЗАЦИЯ И ЗАПУСК (ЧТЕНИЕ ПРОГРЕССА) ===
     const btnTurnPage = document.getElementById('btn-turn-page');
@@ -486,14 +544,42 @@ if (mobileBtn && sidebar) {
     }
 
 // === ФУНКЦИЯ ПЛАВНОГО ПЕРЕХОДА МЕЖДУ ФАЙЛАМИ ===
-function transitionToFile(targetFileName, startPageIndex = 0) {
-    // 1. Применяем класс затухания ко всему body
+async function transitionToFile(targetFileName, startPageIndex = 0) {
     document.body.classList.add('fade-out-site');
 
-    // 2. Ждем 1.2 секунды (время анимации fadeOutSite) и делаем переход
-    setTimeout(() => {
-        window.location.href = `${targetFileName}?page=${startPageIndex}`;
-    }, 1200); 
+    try {
+        const response = await fetch(targetFileName);
+        const htmlText = await response.text();
+        
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        const newContent = doc.getElementById('screen-content');
+
+        setTimeout(() => {
+            const currentContent = document.getElementById('screen-content');
+            currentContent.innerHTML = newContent.innerHTML;
+            window.history.pushState({}, '', targetFileName);
+
+            // 1. ОБНОВЛЯЕМ ПАМЯТЬ СКРИПТА
+            currentFile = targetFileName;
+            pages = document.querySelectorAll('.page');
+            
+            // 2. ВОСКРЕШАЕМ КНОПКИ САЙДБАРА И ЗОНЫ
+            attachDynamicEvents();
+
+            // 3. Масштабируем
+            resizeBook();
+
+            // 4. ОЖИВЛЯЕМ СТРАНИЦУ (Без этого шага был пустой экран)
+            goToPage(startPageIndex, false);
+
+            document.body.classList.remove('fade-out-site');
+        }, 1200);
+
+    } catch (error) {
+        console.error("Ошибка загрузки главы:", error);
+        window.location.href = targetFileName + '?page=' + startPageIndex;
+    }
 }
 
 // === УМНАЯ ПРЕДЗАГРУЗКА СЛЕДУЮЩЕЙ ГЛАВЫ ===

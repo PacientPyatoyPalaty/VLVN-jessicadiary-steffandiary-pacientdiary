@@ -238,12 +238,17 @@ body {
     padding: 2.2rem 5rem 4.4rem;
 
     /* Внутренний скролл для вкладок */
-    overflow-y: auto; 
+    overflow-y: scroll;
     overflow-x: hidden;
     
     /* Эстетичный скроллбар */
     scrollbar-width: thin; 
     scrollbar-color: var(--gold-dim) transparent; 
+
+    /* Сглаживание*/
+-webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 
@@ -284,6 +289,7 @@ sup {
     text-indent: 2.5rem;
     opacity: 1;
     animation: none !important;
+    transform: translateZ(0);
 }
 
 /* Специально для курсива — он в Лоре очень изящный */

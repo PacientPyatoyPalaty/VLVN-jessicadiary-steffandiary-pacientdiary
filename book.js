@@ -544,42 +544,18 @@ if (mobileBtn && sidebar) {
     }
 
 // === ФУНКЦИЯ ПЛАВНОГО ПЕРЕХОДА МЕЖДУ ФАЙЛАМИ ===
-async function transitionToFile(targetFileName, startPageIndex = 0) {
+function transitionToFile(targetFileName, startPageIndex = 0) {
+    // 1. Применяем класс затухания ко всему body
     document.body.classList.add('fade-out-site');
 
-    try {
-        const response = await fetch(targetFileName);
-        const htmlText = await response.text();
-        
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
-        const newContent = doc.getElementById('screen-content');
-
-        setTimeout(() => {
-            const currentContent = document.getElementById('screen-content');
-            currentContent.innerHTML = newContent.innerHTML;
-            window.history.pushState({}, '', targetFileName);
-
-            // 1. ОБНОВЛЯЕМ ПАМЯТЬ СКРИПТА
-            currentFile = targetFileName;
-            pages = document.querySelectorAll('.page');
-            
-            // 2. ВОСКРЕШАЕМ КНОПКИ САЙДБАРА И ЗОНЫ
-            attachDynamicEvents();
-
-            // 3. Масштабируем
-            resizeBook();
-
-            // 4. ОЖИВЛЯЕМ СТРАНИЦУ (Без этого шага был пустой экран)
-            goToPage(startPageIndex, false);
-
-            document.body.classList.remove('fade-out-site');
-        }, 1200);
-
-    } catch (error) {
-        console.error("Ошибка загрузки главы:", error);
-        window.location.href = targetFileName + '?page=' + startPageIndex;
-    }
+    // 2. Если мы уходим с главной обложки (html_0), ждем 1200мс (пока затихнет звук)
+    // Если листаем обычные главы — переход быстрее (800мс)
+    const delay = (currentFile === 'html_0.html') ? 1200 : 800; 
+    
+    // 3. Классический, надежный переход на новую страницу
+    setTimeout(() => {
+        window.location.href = `${targetFileName}?page=${startPageIndex}`;
+    }, delay); 
 }
 
 // === УМНАЯ ПРЕДЗАГРУЗКА СЛЕДУЮЩЕЙ ГЛАВЫ ===

@@ -84,15 +84,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function fadeAudioOut(audioElement) {
+        function fadeAudioOut(audioElement) {
         if (!audioElement || audioElement.paused || audioElement.volume === 0) return;
-        let fadeEffect = setInterval(() => {
+        
+        // Предохранитель: если звук уже затухает, убиваем старый таймер
+        if (audioElement.fadeInterval) clearInterval(audioElement.fadeInterval);
+        
+        audioElement.fadeInterval = setInterval(() => {
+            // Проверка на точность, чтобы не уйти в отрицательные значения
             if (audioElement.volume > 0.05) {
-                audioElement.volume -= 0.05;
+                // Из-за особенностей математики JS с дробями, лучше так:
+                audioElement.volume = Math.max(0, audioElement.volume - 0.05);
             } else {
                 audioElement.volume = 0;
                 audioElement.pause();
-                clearInterval(fadeEffect);
+                clearInterval(audioElement.fadeInterval);
             }
         }, 100);
     }

@@ -230,33 +230,36 @@ function resizeBook() {
     
     if (!viewport || !book) return;
 
-    // Твои пропорции. 
-    // Если хочешь, чтобы текст был КРУПНЕЕ — уменьшай baseHeight (например до 900).
+    // ПРОВЕРКА: Если это смартфон (экран <= 900px) — отключаем масштабирование
+    if (window.innerWidth <= 900) {
+        // Возвращаем дефолтный шрифт и контейнер на весь экран, 
+        // чтобы твои родные свайпы и 3D-анимации работали как раньше!
+        document.documentElement.style.fontSize = ''; 
+        book.style.width = '100%';
+        book.style.height = '100%'; 
+        book.style.position = 'relative'; 
+        book.style.left = '0';
+        book.style.transform = 'none';
+        return; // Выходим! Дальше мобилка работает по старым правилам
+    }
+
+    // --- ЛОГИКА ДЛЯ МОНИТОРОВ И ТВ (оставляем как было) ---
     const baseWidth = 830; 
     const baseHeight = 950; 
 
-    // Берем размеры вьюпорта, а если он скрыт — берем окно минус сайдбар
     const availW = viewport.clientWidth || (window.innerWidth - 370);
     const availH = viewport.clientHeight || window.innerHeight;
 
-    // Считаем масштаб (0.98 для небольшого запаса)
     const scale = Math.min(availW / baseWidth, availH / baseHeight) * 0.98;
     const finalScale = scale > 0 ? scale : 1;
 
-    // 1. ГЛАВНАЯ МАГИЯ: Меняем базовый шрифт документа (за основу берем 16px)
-    // Теперь 1rem на всей странице будет динамически сжиматься или расти
     document.documentElement.style.fontSize = `${16 * finalScale}px`;
 
-    // 2. Жестко применяем стили к контейнеру книги
-    // Переводим твои идеальные пропорции из px в динамические rem
     book.style.position = 'absolute';
     book.style.top = '0'; 
     book.style.left = '50%'; 
     book.style.width = `${baseWidth / 16}rem`;
     book.style.height = `${baseHeight / 16}rem`;
-
-    // 3. Убираем scale() из transform, так как всё теперь масштабируется через шрифт!
-    // Оставляем только безупречную центровку по горизонтали.
     book.style.transformOrigin = 'top center';
     book.style.transform = `translateX(-50%)`;
 }

@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             particle.style.animationDuration = duration;
             container.appendChild(particle);
             setTimeout(() => particle.remove(), parseFloat(duration) * 1000);
-        }, 300);
+        }, 700);
     }
 
     function stopParticles() {
@@ -223,7 +223,7 @@ resizeBook();
         }
     }
 
-// === ФИНАЛЬНОЕ И ТОЧНОЕ МАСШТАБИРОВАНИЕ ===
+// === ФИНАЛЬНОЕ И ТОЧНОЕ МАСШТАБИРОВАНИЕ (Вариант Б: через rem) ===
 function resizeBook() {
     const viewport = document.querySelector('.book-viewport');
     const book = document.querySelector('.art-book-container');
@@ -241,24 +241,30 @@ function resizeBook() {
 
     // Считаем масштаб (0.98 для небольшого запаса)
     const scale = Math.min(availW / baseWidth, availH / baseHeight) * 0.98;
+    const finalScale = scale > 0 ? scale : 1;
 
-    // Жестко применяем стили через JS, чтобы CSS не спорил
+    // 1. ГЛАВНАЯ МАГИЯ: Меняем базовый шрифт документа (за основу берем 16px)
+    // Теперь 1rem на всей странице будет динамически сжиматься или расти
+    document.documentElement.style.fontSize = `${16 * finalScale}px`;
+
+    // 2. Жестко применяем стили к контейнеру книги
+    // Переводим твои идеальные пропорции из px в динамические rem
     book.style.position = 'absolute';
     book.style.top = '0'; 
     book.style.left = '50%'; 
-    book.style.width = `${baseWidth}px`;
-    book.style.height = `${baseHeight}px`;
+    book.style.width = `${baseWidth / 16}rem`;
+    book.style.height = `${baseHeight / 16}rem`;
 
-    // Применяем масштаб и центровку
-    const finalScale = scale > 0 ? scale : 1;
+    // 3. Убираем scale() из transform, так как всё теперь масштабируется через шрифт!
+    // Оставляем только безупречную центровку по горизонтали.
     book.style.transformOrigin = 'top center';
-    book.style.transform = `translateX(-50%) scale(${finalScale})`;
+    book.style.transform = `translateX(-50%)`;
 }
 
 // Оставляем слушатели в самом низу
+resizeBook(); // Вызываем сразу при построении DOM
 window.addEventListener('resize', resizeBook);
-window.addEventListener('load', resizeBook);
-setTimeout(resizeBook, 300); // Запасной вызов через 300мс
+setTimeout(resizeBook, 300);
 
 // === 6 и 7. ЛОГИКА САЙДБАРА, АККОРДЕОНА, МАРШРУТИЗАЦИИ И ЗОН НАВИГАЦИИ ===
     function attachDynamicEvents() {

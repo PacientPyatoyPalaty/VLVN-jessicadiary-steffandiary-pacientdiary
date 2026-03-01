@@ -216,13 +216,18 @@ body {
     height: 100%;
     opacity: 0; 
     pointer-events: none;
-    overflow: hidden;
-    scrollbar-width: none;
+    
+    /* Перелистывание */
     transform-origin: left center; 
     transform: perspective(2000px) rotateY(0deg); 
     transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.8s ease;
     z-index: 1; 
+    
+    /* Оптимизация (GPU и RAM) */
+    contain: content; 
+    backface-visibility: hidden; 
 
+    /* Текст и Масштабирование (rem) */
     font-family: 'Lora', serif !important;
     line-height: 1.6; 
     font-size: 1.1rem;
@@ -230,8 +235,24 @@ body {
     text-align: justify;
     hyphens: auto;
     letter-spacing: 0.015em;
-/* ИЗМЕНЕНО: 35px сверху, 100px по бокам, 70px снизу (чтобы оставить место счетчику) */
-    padding: 35px 80px 70px;
+    padding: 2.2rem 5rem 4.4rem;
+
+    /* Внутренний скролл для вкладок */
+    overflow-y: auto; 
+    overflow-x: hidden;
+    
+    /* Эстетичный скроллбар */
+    scrollbar-width: thin; 
+    scrollbar-color: var(--gold-dim) transparent; 
+}
+
+
+.page::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+.page::-webkit-scrollbar-thumb { 
+    background-color: var(--gold-dim); 
+    border-radius: 10px; 
 }
 
 .vzdoh {
@@ -260,7 +281,7 @@ sup {
 
 .page p {
     margin-bottom: 0; 
-    text-indent: 1cm;
+    text-indent: 2.5rem;
     opacity: 1;
     animation: none !important;
 }
@@ -274,8 +295,8 @@ sup {
 .chapter-header {
     width: 100%;
     text-align: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid rgba(197, 160, 89, 0.1);
 }
 

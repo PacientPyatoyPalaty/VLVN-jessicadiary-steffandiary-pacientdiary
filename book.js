@@ -319,7 +319,7 @@ setTimeout(resizeBook, 300);
                 }
             };
         });
-
+     }
     // Инициализируем события при первой загрузке
     attachDynamicEvents();
 

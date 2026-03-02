@@ -479,7 +479,6 @@ document.addEventListener('fullscreenchange', () => {
     }
 });
 
-
 // === 10. МОБИЛЬНОЕ МЕНЮ И УПРАВЛЕНИЕ ОКНАМИ ===
 const mobileBtn = document.getElementById('mobile-menu-btn');
 const sidebar = document.querySelector('.sidebar');
@@ -597,14 +596,8 @@ if (urlParams.has('page') || currentFile !== 'html_0.html') {
 
 // === ФУНКЦИЯ ПЛАВНОГО ПЕРЕХОДА МЕЖДУ ФАЙЛАМИ ===
 function transitionToFile(targetFileName, startPageIndex = 0) {
-    // 1. Применяем класс затухания ко всему body
     document.body.classList.add('fade-out-site');
-
-    // 2. Если мы уходим с главной обложки (html_0), ждем 1200мс (пока затихнет звук)
-    // Если листаем обычные главы — переход быстрее (800мс)
     const delay = (currentFile === 'html_0.html') ? 1200 : 800; 
-    
-    // 3. Классический, надежный переход на новую страницу
     setTimeout(() => {
         window.location.href = `${targetFileName}?page=${startPageIndex}`;
     }, delay); 
@@ -612,19 +605,12 @@ function transitionToFile(targetFileName, startPageIndex = 0) {
 
 // === УМНАЯ ПРЕДЗАГРУЗКА СЛЕДУЮЩЕЙ ГЛАВЫ ===
 function preloadNextChapter() {
-    // Находим, на каком файле мы сейчас
     const currentIndex = fileSequence.indexOf(currentFile);
-    
-    // Если мы не на последнем файле
     if (currentIndex !== -1 && currentIndex < fileSequence.length - 1) {
         const nextFile = fileSequence[currentIndex + 1];
-        
-        // Создаем скрытый линк для предзагрузки
         const prefetchLink = document.createElement('link');
-        prefetchLink.rel = 'prefetch'; // Команда браузеру: "скачай в фоне, скоро понадобится"
+        prefetchLink.rel = 'prefetch'; 
         prefetchLink.href = nextFile;
-        
-        // Добавляем в голову сайта
         document.head.appendChild(prefetchLink);
     }
 }

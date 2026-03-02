@@ -230,8 +230,8 @@ function resizeBook() {
     
     if (!viewport || !book) return;
 
-    // ПРОВЕРКА: Если это смартфон (экран <= 900px) — отключаем масштабирование
-    if (window.innerWidth <= 900) {
+    // ПРОВЕРКА: Если это смартфон (экран <= 1024px) — отключаем масштабирование
+    if (window.innerWidth <= 1024) {
         // Возвращаем дефолтный шрифт и контейнер на весь экран, 
         // чтобы твои родные свайпы и 3D-анимации работали как раньше!
         document.documentElement.style.fontSize = ''; 
@@ -303,13 +303,13 @@ setTimeout(resizeBook, 300);
                     if (currentFile === 'html_0.html') showContent(false);
                     goToPage(targetPage);
                     
-                    if (window.innerWidth <= 900) {
+                    if (window.innerWidth <= 1024) {
                         document.querySelector('.sidebar')?.classList.remove('mobile-open');
                         document.getElementById('mobile-menu-btn')?.classList.remove('active');
                     }
                 } else {
                     // Закрываем мобильное меню при переходе на новую главу
-                    if (window.innerWidth <= 900) {
+                    if (window.innerWidth <= 1024) {
                         document.querySelector('.sidebar')?.classList.remove('mobile-open');
                         document.getElementById('mobile-menu-btn')?.classList.remove('active');
                     }
@@ -593,6 +593,19 @@ if (urlParams.has('page') || currentFile !== 'html_0.html') {
         theme.play().catch(() => {});
     }
 }
+
+// === ОПТИМИЗАЦИЯ ПАМЯТИ: УПРАВЛЕНИЕ ИСКРАМИ ===
+function stopParticles() {
+    clearInterval(particlesInterval); // Останавливаем бесконечный цикл создания div
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        stopParticles(); // Вкладка свернута — ставим на паузу
+    } else {
+        startParticles(); // Читатель вернулся — снова запускаем магию
+    }
+});
 
 // === ФУНКЦИЯ ПЛАВНОГО ПЕРЕХОДА МЕЖДУ ФАЙЛАМИ ===
 function transitionToFile(targetFileName, startPageIndex = 0) {

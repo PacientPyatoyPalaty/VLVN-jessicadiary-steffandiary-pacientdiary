@@ -1264,11 +1264,15 @@ body.theme-francis {
         top: 0;
         left: 0;
         width: 100%;
-        display: none; 
+        visibility: hidden; 
+        opacity: 0; 
+        pointer-events: none;
         transition: none !important;
     }
     .page.active {
-        display: block; 
+        visibility: visible; 
+        opacity: 1; 
+        pointer-events: auto;
         position: relative !important; 
     }
     /* Блокируем 3D-эффект только для старого класса flipped, чтобы он не мешал новым свайпам */

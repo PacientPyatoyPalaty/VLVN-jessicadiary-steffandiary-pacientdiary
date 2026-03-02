@@ -320,23 +320,6 @@ setTimeout(resizeBook, 300);
             };
         });
 
-        // Навигационные зоны
-        const zonePrev = document.getElementById('zone-prev');
-        const zoneNext = document.getElementById('zone-next');
-        
-        if (zonePrev) {
-            zonePrev.onclick = () => {
-                goToPage(currentPageIndex - 1);
-            };
-        }
-
-        if (zoneNext) {
-            zoneNext.onclick = () => {
-                goToPage(currentPageIndex + 1);
-            };
-        }
-    }
-
     // Инициализируем события при первой загрузке
     attachDynamicEvents();
 
@@ -370,6 +353,8 @@ setTimeout(resizeBook, 300);
 
 // === 9. ГЛОБАЛЬНАЯ НАВИГАЦИЯ (КЛИКИ, СВАЙПЫ, КЛАВИАТУРА) ===
 
+let isAnimating = false; // Блокировка от двойных нажатий
+
 function isGalleryClosed() {
     const modal = document.getElementById('gallery-modal');
     return !modal || modal.style.display === 'none' || modal.style.display === '';
@@ -381,7 +366,7 @@ const zonePrev = document.getElementById('zone-prev');
 // Клик по ПРАВОЙ стороне (идем вперед) -> страница уезжает ВЛЕВО
 if (zoneNext) {
     zoneNext.addEventListener('click', () => {
-        if (!isGalleryClosed()) return;
+        if (!isGalleryClosed() || isAnimating) return; // Проверяем замок
         if (window.innerWidth <= 1024) changePageMobile('next');
         else goToPage(currentPageIndex + 1);
     });
@@ -390,7 +375,7 @@ if (zoneNext) {
 // Клик по ЛЕВОЙ стороне (идем назад) -> страница уезжает ВПРАВО
 if (zonePrev) {
     zonePrev.addEventListener('click', () => {
-        if (!isGalleryClosed()) return;
+        if (!isGalleryClosed() || isAnimating) return; // Проверяем замок
         if (window.innerWidth <= 1024) changePageMobile('prev');
         else goToPage(currentPageIndex - 1);
     });
@@ -398,19 +383,19 @@ if (zonePrev) {
 
 // Управление клавиатурой
 document.addEventListener('keydown', (e) => {
-    if (!isGalleryClosed()) return;
+    if (!isGalleryClosed() || isAnimating) return; // Проверяем замок
     if (e.key === 'ArrowRight' && zoneNext) zoneNext.click();
     if (e.key === 'ArrowLeft' && zonePrev) zonePrev.click();
 });
 
-// Свайпы (теперь работают, так как мы добавили touchStartY/Y)
+// Свайпы
 document.addEventListener('touchstart', e => {
     touchStartX = e.changedTouches[0].clientX;
     touchStartY = e.changedTouches[0].clientY;
 }, { passive: true });
 
 document.addEventListener('touchend', e => {
-    if (!isGalleryClosed() || window.innerWidth > 1024) return;
+    if (!isGalleryClosed() || window.innerWidth > 1024 || isAnimating) return; // Проверяем замок
     
     touchEndX = e.changedTouches[0].clientX;
     touchEndY = e.changedTouches[0].clientY;
@@ -418,31 +403,33 @@ document.addEventListener('touchend', e => {
     const dx = touchEndX - touchStartX;
     const dy = touchEndY - touchStartY;
 
-    // Защита от случайного скролла (мах по горизонтали должен быть больше)
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-        if (dx < 0) changePageMobile('next'); // Свайп влево -> страница уезжает влево
-        else changePageMobile('prev');        // Свайп вправо -> страница уезжает вправо
+        if (dx < 0) changePageMobile('next');
+        else changePageMobile('prev');
     }
 }, { passive: true });
 
-// Функция мобильной анимации
+// === ФУНКЦИЯ МОБИЛЬНОГО ПЕРЕЛИСТЫВАНИЯ ===
 function changePageMobile(direction) {
+    if (isAnimating) return; 
+    
     const pages = document.querySelectorAll('.page');
     const currentPage = pages[currentPageIndex];
     let nextIdx = (direction === 'next') ? currentPageIndex + 1 : currentPageIndex - 1;
 
     if (nextIdx >= 0 && nextIdx < pages.length) {
+        isAnimating = true; // ЗАКРЫВАЕМ ЗАМОК
+        
         const nextPage = pages[nextIdx];
 
-        // Очищаем классы
         [currentPage, nextPage].forEach(p => p.classList.remove('exit-left', 'exit-right', 'enter-left', 'enter-right', 'flipped'));
 
         if (direction === 'next') {
-            currentPage.classList.add('exit-left');        // Текущая улетает ВЛЕВО
-            nextPage.classList.add('active', 'enter-right'); // Новая заходит СПРАВА
+            currentPage.classList.add('exit-left');
+            nextPage.classList.add('active', 'enter-right');
         } else {
-            currentPage.classList.add('exit-right');       // Текущая улетает ВПРАВО
-            nextPage.classList.add('active', 'enter-left');  // Новая заходит СЛЕВА
+            currentPage.classList.add('exit-right');
+            nextPage.classList.add('active', 'enter-left');
         }
 
         currentPageIndex = nextIdx;
@@ -456,7 +443,9 @@ function changePageMobile(direction) {
             const offset = parseInt(document.body.getAttribute('data-offset') || 0);
             const counter = document.getElementById('page-counter');
             if (counter) counter.innerText = `-${currentPageIndex + 1 + offset}-`;
-        }, 600);
+            
+            isAnimating = false; // ОТКРЫВАЕМ ЗАМОК (через 600мс)
+        }, 600); 
         
     } else {
         const curFileIdx = fileSequence.indexOf(currentFile);
@@ -467,7 +456,6 @@ function changePageMobile(direction) {
         }
     }
 }
-
 
 // === АВТОМАТИЧЕСКОЕ СКРЫТИЕ ПОДСКАЗКИ ПРИ ПОЛНОМ ЭКРАНЕ ===
 document.addEventListener('fullscreenchange', () => {

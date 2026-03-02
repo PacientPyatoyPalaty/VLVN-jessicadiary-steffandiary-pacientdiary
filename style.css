@@ -227,8 +227,6 @@ body {
     /* Оптимизация (GPU и RAM) */
     contain: content; 
     backface-visibility: hidden; 
-will-change: transform, opacity; /* Включает аппаратное ускорение */
-    backface-visibility: hidden; /* Убирает микро-мерцания текста при анимации */
 
     /* Текст и Масштабирование (rem) */
     font-family: 'Lora', serif !important;
@@ -253,7 +251,6 @@ will-change: transform, opacity; /* Включает аппаратное уск
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
 }
-
 
 .page::-webkit-scrollbar-track { 
     background: transparent; 
@@ -1285,6 +1282,7 @@ body.theme-francis {
 .enter-right { animation: slideInRight 0.6s ease-in-out forwards; }
 .exit-right { animation: slideOutRight 0.6s ease-in-out forwards; }
 .enter-left { animation: slideInLeft 0.6s ease-in-out forwards; }
+
 
 @keyframes slideOutLeft {
     from { transform: translateX(0); opacity: 1; }

@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentPath = window.location.pathname;
     let currentFile = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'html_0.html';
     const urlParams = new URLSearchParams(window.location.search);
-    const startPage = urlParams.get('page');
+    const startPage = parseInt(urlParams.get('page')) || 0;
 
     let touchStartX = 0;
     let touchEndX = 0;
@@ -368,55 +368,108 @@ setTimeout(resizeBook, 300);
         });
     }
 
-// === 9. ГЛОБАЛЬНАЯ НАВИГАЦИЯ (КЛАВИАТУРА И СВАЙПЫ) ===
+// === 9. ГЛОБАЛЬНАЯ НАВИГАЦИЯ (КЛИКИ, СВАЙПЫ, КЛАВИАТУРА) ===
 
-// 1. Объявляем переменные в начале (чтобы они были доступны всем функциям)
-let touchStartY = 0;
-let touchEndY = 0;
+// 1. Проверка открытой галереи
+function isGalleryClosed() {
+    const modal = document.getElementById('gallery-modal');
+    return !modal || modal.style.display === 'none';
+}
 
-// Управление клавиатурой
+// 2. Обработка кликов по боковым зонам
+const zoneNext = document.getElementById('zone-next');
+const zonePrev = document.getElementById('zone-prev');
+
+if (zoneNext) {
+    zoneNext.addEventListener('click', () => {
+        if (!isGalleryClosed()) return;
+        if (window.innerWidth < 768) changePageMobile('next');
+        else goToPage(currentPageIndex + 1);
+    });
+}
+
+if (zonePrev) {
+    zonePrev.addEventListener('click', () => {
+        if (!isGalleryClosed()) return;
+        if (window.innerWidth < 768) changePageMobile('prev');
+        else goToPage(currentPageIndex - 1);
+    });
+}
+
+// 3. Обработка клавиатуры
 document.addEventListener('keydown', (e) => {
     if (!isGalleryClosed()) return;
-    if (e.key === 'ArrowLeft') {
-        document.getElementById('zone-prev')?.click();
-    } else if (e.key === 'ArrowRight') {
-        document.getElementById('zone-next')?.click();
-    }
+    if (e.key === 'ArrowRight' && zoneNext) zoneNext.click();
+    if (e.key === 'ArrowLeft' && zonePrev) zonePrev.click();
 });
 
-// Начало касания
+// 4. Обработка свайпов на смартфонах
 document.addEventListener('touchstart', e => {
     touchStartX = e.changedTouches[0].clientX;
     touchStartY = e.changedTouches[0].clientY;
 }, { passive: true });
 
-// Конец касания
 document.addEventListener('touchend', e => {
-    touchEndX = e.changedTouches[0].clientX;
-    touchEndY = e.changedTouches[0].clientY;
-
-    // Если галерея открыта — свайпы книги не работают
-    if (!isGalleryClosed()) return;
+    if (!isGalleryClosed() || window.innerWidth >= 768) return;
     
-    const swipeDistanceX = touchEndX - touchStartX;
-    const swipeDistanceY = touchEndY - touchStartY;
-    const swipeThreshold = 120; // Уверенный порог для «маха» пальцем
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    
+    const dx = touchEndX - touchStartX;
+    const dy = touchEndY - touchStartY;
 
-    // МАГИЯ ЗАЩИТЫ: 
-    // Листаем только если:
-    // 1. Длина маха по горизонтали больше порога (120px)
-    // 2. Движение по горизонтали (X) минимум в ДВА раза сильнее, чем по вертикали (Y)
-    // Это гарантирует, что обычный скролл вверх/вниз не перелистнет страницу
-    if (Math.abs(swipeDistanceX) > swipeThreshold && Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY) * 2) {
-        if (swipeDistanceX < 0) {
-            // Палец шел влево — страница вперед
-            document.getElementById('zone-next')?.click();
-        } else {
-            // Палец шел вправо — страница назад
-            document.getElementById('zone-prev')?.click();
-        }
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) changePageMobile('next'); // Свайп влево -> вперед
+        else changePageMobile('prev');        // Свайп вправо -> назад
     }
 }, { passive: true });
+
+// 5. Функция мобильного слайда (БЕЗ 3D-переворотов)
+function changePageMobile(direction) {
+    const pages = document.querySelectorAll('.page');
+    const currentPage = pages[currentPageIndex];
+    let nextIdx = (direction === 'next') ? currentPageIndex + 1 : currentPageIndex - 1;
+
+    if (nextIdx >= 0 && nextIdx < pages.length) {
+        const nextPage = pages[nextIdx];
+
+        // Очищаем классы перед стартом
+        [currentPage, nextPage].forEach(p => p.classList.remove('exit-left', 'exit-right', 'enter-left', 'enter-right', 'flipped'));
+
+        // Назначаем анимации в зависимости от направления
+        if (direction === 'next') {
+            currentPage.classList.add('exit-left');
+            nextPage.classList.add('active', 'enter-right');
+        } else {
+            currentPage.classList.add('exit-right');
+            nextPage.classList.add('active', 'enter-left');
+        }
+
+        currentPageIndex = nextIdx;
+        localStorage.setItem('jessica_diary_last_page', currentPageIndex);
+
+        // Чистим классы после завершения анимации
+        setTimeout(() => {
+            currentPage.classList.remove('active', 'exit-left', 'exit-right');
+            nextPage.classList.remove('enter-left', 'enter-right');
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Возвращаем в начало страницы
+            
+            // Обновляем счетчик страниц
+            const offset = parseInt(document.body.getAttribute('data-offset') || 0);
+            const counter = document.getElementById('page-counter');
+            if (counter) counter.innerText = `-${currentPageIndex + 1 + offset}-`;
+        }, 600);
+        
+    } else {
+        // Переход между HTML-файлами
+        const curFileIdx = fileSequence.indexOf(currentFile);
+        if (direction === 'next' && curFileIdx < fileSequence.length - 1) {
+            transitionToFile(fileSequence[curFileIdx + 1], 0);
+        } else if (direction === 'prev' && curFileIdx > 0) {
+            transitionToFile(fileSequence[curFileIdx - 1], 99);
+        }
+    }
+}
 
 
 // === АВТОМАТИЧЕСКОЕ СКРЫТИЕ ПОДСКАЗКИ ПРИ ПОЛНОМ ЭКРАНЕ ===
@@ -440,6 +493,8 @@ document.addEventListener('fullscreenchange', () => {
         }
     }
 });
+
+
 
 // === 10. МОБИЛЬНОЕ МЕНЮ И УПРАВЛЕНИЕ ОКНАМИ ===
 const mobileBtn = document.getElementById('mobile-menu-btn');

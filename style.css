@@ -1256,3 +1256,43 @@ body.theme-francis {
         text-indent: 1.2rem !important; /* Делаем красную строку чуть аккуратнее для узкого экрана */
     }
 }
+
+/* === МОБИЛЬНАЯ АДАПТАЦИЯ И АНИМАЦИИ ПЕРЕЛИСТЫВАНИЯ === */
+@media (max-width: 768px) {
+    .page {
+        position: absolute !important; 
+        top: 0;
+        left: 0;
+        width: 100%;
+        display: none; /* Скрываем все страницы */
+        transform: none !important; /* Убиваем 3D */
+        transition: none !important;
+    }
+    .page.active {
+        display: block; /* Показываем только активную */
+        position: relative !important; 
+    }
+}
+
+/* Анимации: слайды в зависимости от направления */
+.exit-left { animation: slideOutLeft 0.6s ease-in-out forwards; }
+.enter-right { animation: slideInRight 0.6s ease-in-out forwards; }
+.exit-right { animation: slideOutRight 0.6s ease-in-out forwards; }
+.enter-left { animation: slideInLeft 0.6s ease-in-out forwards; }
+
+@keyframes slideOutLeft {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100%); opacity: 0; }
+}
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+@keyframes slideInLeft {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}

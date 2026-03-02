@@ -382,7 +382,7 @@ const zonePrev = document.getElementById('zone-prev');
 if (zoneNext) {
     zoneNext.addEventListener('click', () => {
         if (!isGalleryClosed()) return;
-        if (window.innerWidth < 768) changePageMobile('next');
+        if (window.innerWidth <= 1024) changePageMobile('next');
         else goToPage(currentPageIndex + 1);
     });
 }
@@ -391,7 +391,7 @@ if (zoneNext) {
 if (zonePrev) {
     zonePrev.addEventListener('click', () => {
         if (!isGalleryClosed()) return;
-        if (window.innerWidth < 768) changePageMobile('prev');
+        if (window.innerWidth <= 1024) changePageMobile('prev');
         else goToPage(currentPageIndex - 1);
     });
 }
@@ -410,7 +410,7 @@ document.addEventListener('touchstart', e => {
 }, { passive: true });
 
 document.addEventListener('touchend', e => {
-    if (!isGalleryClosed() || window.innerWidth >= 768) return;
+    if (!isGalleryClosed() || window.innerWidth > 1024) return;
     
     touchEndX = e.changedTouches[0].clientX;
     touchEndY = e.changedTouches[0].clientY;

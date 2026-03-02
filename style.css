@@ -1261,7 +1261,7 @@ body.theme-francis {
 }
 
 /* === МОБИЛЬНАЯ АДАПТАЦИЯ И АНИМАЦИИ ПЕРЕЛИСТЫВАНИЯ === */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .page {
         position: absolute !important; 
         top: 0;

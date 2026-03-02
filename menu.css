@@ -26,6 +26,7 @@ body {
     to { opacity: 1; }
 }
 
+
 /* === УПРАВЛЕНИЕ ЭКРАНАМИ === */
 .screen {
     display: none;
@@ -48,7 +49,22 @@ body {
 
 /* === ЭКРАН 1: ИНТРО === */
 #screen-intro {
+    /* 1. Настройка отображения самого экрана (из нижнего блока) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
+    
+    /* 2. Твоя строка с градиентом и фото */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url('cover-0.png');
+    
+    /* 3. Магия центрирования и размера */
+    background-size: auto 100vh;    /* Высота — 85% экрана, ширина подстроится сама */
+    background-position: center;   /* Ровно по центру */
+    background-repeat: no-repeat;  /* Запрещаем картинке дублироваться */
+    
+    /* 4. Цвет фона по бокам */
+    background-color: #0d0d0d;
 }
 
 .intro-titles {
@@ -262,20 +278,4 @@ body {
     opacity: 0.6;
     margin-top: 10px;
     font-weight: 500;
-}
-
-#screen-intro {
-    /* Добавляем путь к фото и накладываем градиентное затемнение */
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), 
-                url('cover-0.png'); /* Проверь расширение файла (png или jpg) */
-    
-    background-size: cover;         /* Растягиваем на весь экран */
-    background-position: center;    /* Центрируем изображение */
-    background-repeat: no-repeat;
-    background-attachment: fixed;   /* Делает фон неподвижным, добавляя "веса" */
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }

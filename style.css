@@ -22,6 +22,7 @@ body {
     opacity: 0;
     animation: fadeInSite 2.5s ease-in-out forwards;
     transition: background 2s ease;
+    overscroll-behavior-y: none;
 }
 
 @keyframes fadeInSite {
@@ -226,6 +227,8 @@ body {
     /* Оптимизация (GPU и RAM) */
     contain: content; 
     backface-visibility: hidden; 
+will-change: transform, opacity; /* Включает аппаратное ускорение */
+    backface-visibility: hidden; /* Убирает микро-мерцания текста при анимации */
 
     /* Текст и Масштабирование (rem) */
     font-family: 'Lora', serif !important;
@@ -1255,4 +1258,47 @@ body.theme-francis {
     .page p {
         text-indent: 1.2rem !important; /* Делаем красную строку чуть аккуратнее для узкого экрана */
     }
+}
+
+/* === МОБИЛЬНАЯ АДАПТАЦИЯ И АНИМАЦИИ ПЕРЕЛИСТЫВАНИЯ === */
+@media (max-width: 768px) {
+    .page {
+        position: absolute !important; 
+        top: 0;
+        left: 0;
+        width: 100%;
+        display: none; 
+        transition: none !important;
+    }
+    .page.active {
+        display: block; 
+        position: relative !important; 
+    }
+    /* Блокируем 3D-эффект только для старого класса flipped, чтобы он не мешал новым свайпам */
+    .page.flipped {
+        transform: none !important;
+    }
+}
+
+/* Анимации: слайды в зависимости от направления */
+.exit-left { animation: slideOutLeft 0.6s ease-in-out forwards; }
+.enter-right { animation: slideInRight 0.6s ease-in-out forwards; }
+.exit-right { animation: slideOutRight 0.6s ease-in-out forwards; }
+.enter-left { animation: slideInLeft 0.6s ease-in-out forwards; }
+
+@keyframes slideOutLeft {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100%); opacity: 0; }
+}
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+@keyframes slideInLeft {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }

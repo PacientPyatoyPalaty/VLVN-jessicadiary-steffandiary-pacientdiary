@@ -593,22 +593,24 @@ if (mobileBtn && sidebar) {
         }
     });
 
-    // === 11. ФИНАЛЬНОЕ РЕШЕНИЕ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ===
-    if (startPage !== null || currentFile !== 'html_0.html') {
-        showContent(true);
-        let targetPage = parseInt(startPage) || 0;
-        if (targetPage === 99) targetPage = pages.length - 1;
-        goToPage(targetPage, false);
-        } else {
-        startParticles();
-        // Запускаем предзагрузку, пока читатель любуется обложкой
-        preloadAssets(assetsToPreload); 
-        
-        if (theme) {
-            theme.volume = 0.6;
-            theme.play().catch(() => {});
-        }
+// === 11. ФИНАЛЬНОЕ РЕШЕНИЕ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ===
+// Проверяем, есть ли в ссылке конкретный номер страницы (параметр ?page=)
+if (urlParams.has('page') || currentFile !== 'html_0.html') {
+    // Если есть параметр ИЛИ это не первый файл — сразу показываем текст
+    if (typeof showContent === 'function') showContent(true);
+    let targetPage = parseInt(urlParams.get('page')) || 0;
+    if (targetPage === 99 && typeof pages !== 'undefined') targetPage = pages.length - 1;
+    if (typeof goToPage === 'function') goToPage(targetPage, false);
+} else {
+    // МЫ НА ГЛАВНОЙ (html_0.html) — ПОКАЗЫВАЕМ ОБЛОЖКУ И БЛЁСТКИ!
+    if (typeof startParticles === 'function') startParticles();
+    if (typeof preloadAssets === 'function' && typeof assetsToPreload !== 'undefined') preloadAssets(assetsToPreload); 
+    
+    if (typeof theme !== 'undefined' && theme) {
+        theme.volume = 0.6;
+        theme.play().catch(() => {});
     }
+}
 
 // === ФУНКЦИЯ ПЛАВНОГО ПЕРЕХОДА МЕЖДУ ФАЙЛАМИ ===
 function transitionToFile(targetFileName, startPageIndex = 0) {

@@ -1345,14 +1345,17 @@ sup.custom-note::after {
     left: 50%;
     transform: translateX(-50%) translateY(10px); /* Слегка опущен для анимации */
     
-    width: 200px; /* Оптимальная ширина для чтения */
+    width: 220px; /* Оптимальная ширина для чтения */
     background-color: var(--bg-color); /* Цвет фона из твоей темы */
     color: var(--text-color);
     border: 1px solid var(--gold-dim); /* Золотая рамочка */
     padding: 10px 12px;
     border-radius: 4px;
+
+    text-indent: 0 !important; /* Убираем наследование абзацного отступа */
+    text-align: left; /* Можно поставить влево, чтобы текст ложился плотнее */
     
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-family: 'Cormorant Garamond', serif;
     font-weight: normal;
     text-align: center;

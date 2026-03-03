@@ -56,8 +56,6 @@ let touchEndX = 0, touchEndY = 0;
 
     // === ПРЕДЗАГРУЗКА РЕСУРСОВ ===
     const assetsToPreload = [
-        // Изображения портретов из разделов
-       'cover-1.png','cover-2.png','cover-3.png','cover-4.png','cover-5.png','cover-6.png', 'cover-7.png', 'cover-8.png', 'cover-9.png', 'cover-10.png', 'cover-11.png', 'cover-12.png', 'cover-13.png', 'cover-14.png',
         // Звуковые эффекты
         'kviboruk.mp3', 'pr.mp3' 
     ];
@@ -633,3 +631,26 @@ function preloadNextChapter() {
 setTimeout(preloadNextChapter, 3000);
 
 });
+
+// === ФУНКЦИЯ УПРАВЛЕНИЯ ПЛЕЕРАМИ (ГЛОБАЛЬНАЯ) ===
+function stopOthers(current) {
+    if (!current.open) return;
+
+    // 1. Выключаем все остальные плееры
+    document.querySelectorAll('.music-box').forEach(el => {
+        if (el !== current) {
+            el.open = false; 
+            el.querySelectorAll('iframe').forEach(f => {
+                f.src = ''; // Очистка звука и памяти
+            });
+        }
+    });
+
+    // 2. Активируем текущий плеер (ВАЖНО!)
+    current.querySelectorAll('iframe').forEach(f => {
+        const realSrc = f.getAttribute('data-src');
+        if (realSrc && f.src !== realSrc) {
+            f.src = realSrc; // Перекладываем ссылку из заначки в плеер
+        }
+    });
+}

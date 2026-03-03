@@ -1312,3 +1312,85 @@ body.theme-francis {
     from { transform: translateX(-100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
+
+/* === ПОДСТРАХОВКА: МЯГКИЙ УХОД ДЛЯ ДЛИННЫХ СТРАНИЦ === */
+.page.flat-turn {
+    /* Меняем стандартную 3D-анимацию на плавное растворение */
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out !important;
+}
+
+/* Перехватываем момент перелистывания от JS */
+.page.flat-turn.flipped {
+    /* Вместо rotateY (излома) делаем легкое оседание вниз и растворение */
+    transform: scale(0.98) translateY(-10px) !important; 
+    opacity: 0 !important;
+}
+
+/* === ПРЕМИАЛЬНЫЕ СНОСКИ (ПК + МОБИЛЬНЫЕ) === */
+
+sup.custom-note {
+    color: var(--gold-dim);
+    cursor: pointer;
+    position: relative;
+    outline: none; /* Убираем системную синюю рамку при клике на телефоне */
+    margin-left: 2px;
+    font-weight: bold;
+}
+
+/* Сам блок с текстом подсказки (изначально скрыт) */
+sup.custom-note::after {
+    content: attr(data-tooltip); /* Берем текст из HTML */
+    position: absolute;
+    bottom: 150%; 
+    left: 50%;
+    transform: translateX(-50%) translateY(10px); /* Слегка опущен для анимации */
+    
+    width: 200px; /* Оптимальная ширина для чтения */
+    background-color: var(--bg-color); /* Цвет фона из твоей темы */
+    color: var(--text-color);
+    border: 1px solid var(--gold-dim); /* Золотая рамочка */
+    padding: 10px 12px;
+    border-radius: 4px;
+    
+    font-size: 0.9rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: normal;
+    text-align: center;
+    line-height: 1.3;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+    
+    /* Плавное появление */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 100;
+    pointer-events: none; /* Чтобы подсказка не мешала кликать дальше */
+}
+
+/* Маленький треугольник, указывающий вниз на сноску */
+sup.custom-note::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--gold-dim) transparent transparent transparent;
+    
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 101;
+    pointer-events: none;
+}
+
+/* Анимация появления при наведении (ПК) и при клике (Телефон) */
+sup.custom-note:hover::after,
+sup.custom-note:focus::after,
+sup.custom-note:hover::before,
+sup.custom-note:focus::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0); /* Всплывает наверх */
+}

@@ -225,33 +225,20 @@ resizeBook();
 function resizeBook() {
     const viewport = document.querySelector('.book-viewport');
     const book = document.querySelector('.art-book-container');
-    
     if (!viewport || !book) return;
 
-    // ПРОВЕРКА: Если это смартфон (экран <= 1024px) — отключаем масштабирование
     if (window.innerWidth <= 1024) {
-        // Возвращаем дефолтный шрифт и контейнер на весь экран, 
-        // чтобы твои родные свайпы и 3D-анимации работали как раньше!
         document.documentElement.style.fontSize = ''; 
         book.style.width = '100%';
-        book.style.height = '100%'; 
-        book.style.position = 'relative'; 
+        book.style.height = '100%';
+        book.style.position = 'relative';
         book.style.left = '0';
         book.style.transform = 'none';
-        return; // Выходим! Дальше мобилка работает по старым правилам
+        return; 
     }
 
-    // --- ЛОГИКА ДЛЯ МОНИТОРОВ И ТВ (оставляем как было) ---
-    const baseWidth = 830; 
-    const baseHeight = 950; 
-
-    const availW = viewport.clientWidth || (window.innerWidth - 370);
-    const availH = viewport.clientHeight || window.innerHeight;
-
-    const scale = Math.min(availW / baseWidth, availH / baseHeight) * 0.98;
-    const finalScale = scale > 0 ? scale : 1;
-
-    document.documentElement.style.fontSize = `${16 * finalScale}px`;
+    const baseWidth = 830;
+    const baseHeight = 950;
 
     book.style.position = 'absolute';
     book.style.top = '0'; 

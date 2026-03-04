@@ -9,7 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentPath = window.location.pathname;
     let currentFile = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'html_0.html';
     const urlParams = new URLSearchParams(window.location.search);
-    const startPage = parseInt(urlParams.get('page')) || 0;
+    let startPage = parseInt(urlParams.get('page')) || 0;
+
+    // Проверяем, есть ли смещение у текущего файла
+    const offset = parseInt(document.body.getAttribute('data-offset')) || 0;
+
+// Если переданный номер страницы больше или равен смещению, вычитаем его.
+    // ИСКЛЮЧЕНИЕ: 99 — это системный код для "открыть последнюю страницу" при листании назад.
+    if (startPage !== 99 && startPage >= offset) {
+        startPage = startPage - offset;
+    }
 
 let touchStartX = 0, touchStartY = 0;
 let touchEndX = 0, touchEndY = 0;
@@ -286,7 +295,15 @@ setTimeout(resizeBook, 300);
                 
                 if (!targetFile || targetFile === currentFile) {
                     if (currentFile === 'html_0.html') showContent(false);
-                    goToPage(targetPage);
+                    
+                    // Вычисляем локальную страницу, вычитая offset
+                    const currentOffset = parseInt(document.body.getAttribute('data-offset')) || 0;
+                    let localPage = targetPage;
+                    if (localPage >= currentOffset) {
+                        localPage = localPage - currentOffset;
+                    }
+                    
+                    goToPage(localPage);
                     
                     if (window.innerWidth <= 1024) {
                         document.querySelector('.sidebar')?.classList.remove('mobile-open');
@@ -566,10 +583,12 @@ document.addEventListener('keydown', (event) => {
 // === 11. ФИНАЛЬНОЕ РЕШЕНИЕ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ===
 if (urlParams.has('page') || currentFile !== 'html_0.html') {
     if (typeof showContent === 'function') showContent(true);
-    let targetPage = parseInt(urlParams.get('page')) || 0;
-    if (targetPage === 99 && typeof pages !== 'undefined') targetPage = pages.length - 1;
-    if (typeof goToPage === 'function') goToPage(targetPage, false);
-} else {
+    // Используем уже вычисленный в начале файла startPage (с вычетом offset)
+    if (startPage === 99 && typeof pages !== 'undefined') startPage = pages.length - 1;
+    if (typeof goToPage === 'function') goToPage(startPage, false);
+}
+
+else {
     if (typeof startParticles === 'function') startParticles();
     if (typeof preloadAssets === 'function' && typeof assetsToPreload !== 'undefined') preloadAssets(assetsToPreload); 
     

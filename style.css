@@ -555,7 +555,7 @@ sup {
 
 /* Состояние ОТКРЫТОГО аккордеона */
 .staircase-accordion .accordion-item.active > .submenu-list {
-    max-height: 800px; /* С запасом для длинных списков */
+    max-height: 1200px; /* С запасом для длинных списков */
     opacity: 1;
     visibility: visible;
     margin-top: 5px;

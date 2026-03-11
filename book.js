@@ -110,11 +110,6 @@ let touchEndX = 0, touchEndY = 0;
         }, 100);
     }
 
-    function isGalleryClosed() {
-        const gallery = document.getElementById('gallery-modal');
-        return !gallery || gallery.style.display !== 'flex';
-    }
-
     // === 3. БЛЁСТКИ ===
     function startParticles() {
         const container = document.getElementById('particles-container');
@@ -174,10 +169,11 @@ if (index < 0) {
         if (pages[index]) pages[index].classList.add('active');
         currentPageIndex = index;
         
-        // --- СОХРАНЕНИЕ В LOCALSTORAGE ---
-        // Записываем текущий файл и страницу при каждом успешном переходе
-        localStorage.setItem('jessica_diary_last_file', currentFile);
-        localStorage.setItem('jessica_diary_last_page', index);
+// --- СОХРАНЕНИЕ В LOCALSTORAGE ---
+const globalOffset = parseInt(document.body.getAttribute('data-offset') || 0);
+localStorage.setItem('jessica_diary_last_file', currentFile);
+// Сохраняем абсолютный номер (индекс страницы + смещение файла)
+localStorage.setItem('jessica_diary_last_page', index + globalOffset);
         // ---------------------------------
         
         const offset = parseInt(document.body.getAttribute('data-offset') || 0);
@@ -336,9 +332,10 @@ setTimeout(resizeBook, 300);
             const savedPage = localStorage.getItem('jessica_diary_last_page');
 
             if (savedFile && savedPage !== null && (savedFile !== 'html_0.html' || savedPage !== "0")) {
-                if (savedFile === currentFile) {
-                    showContent(false);
-                    goToPage(parseInt(savedPage));
+                   if (savedFile === currentFile) {
+                   showContent(false);
+                   const currentOffset = parseInt(document.body.getAttribute('data-offset') || 0);
+                   goToPage(parseInt(savedPage) - currentOffset); // Вычитаем смещение
                 } else {
                     document.body.style.transition = 'opacity 0.8s ease';
                     document.body.style.opacity = '0';
@@ -435,7 +432,8 @@ function changePageMobile(direction) {
         }
 
         currentPageIndex = nextIdx;
-        localStorage.setItem('jessica_diary_last_page', currentPageIndex);
+        const currentOffset = parseInt(document.body.getAttribute('data-offset') || 0);
+        localStorage.setItem('jessica_diary_last_page', currentPageIndex + currentOffset);
 
         setTimeout(() => {
             currentPage.classList.remove('active', 'exit-left', 'exit-right');
@@ -598,10 +596,54 @@ else {
     }
 }
 
-// === ОПТИМИЗАЦИЯ ПАМЯТИ: УПРАВЛЕНИЕ ИСКРАМИ ===
-function stopParticles() {
-    clearInterval(particlesInterval); // Останавливаем бесконечный цикл создания div
+// === 12. Запоминалка страниц ===
+function updateSidebarHighlight(localIndex) {
+    const offset = parseInt(document.body.getAttribute('data-offset') || 0);
+    const absoluteTarget = localIndex + offset;
+    const currentFile = window.location.pathname.split('/').pop() || 'html_0.html';
+
+    // 1. Убираем старую подсветку
+    document.querySelectorAll('.submenu-list li').forEach(li => {
+        li.style.color = "";
+        li.style.fontWeight = "";
+    });
+
+    // 2. Ищем пункт, который соответствует текущему файлу и странице
+    const allLinks = Array.from(document.querySelectorAll('.submenu-list li[data-target]'));
+    let targetLi = null;
+
+    for (let li of allLinks) {
+        const liFile = li.getAttribute('data-file');
+        const liTarget = parseInt(li.getAttribute('data-target'));
+
+        if (liFile === currentFile && liTarget <= absoluteTarget) {
+            targetLi = li; // Запоминаем последний подходящий пункт (ближайшую дату)
+        }
+    }
+
+    if (targetLi) {
+        // Подсвечиваем
+        targetLi.style.color = "var(--gold)";
+        targetLi.style.fontWeight = "bold";
+
+        // 3. РАСКРЫВАЕМ РОДИТЕЛЕЙ (Аккордеоны)
+        
+        // Сначала безжалостно закрываем абсолютно ВСЕ разделы:
+        document.querySelectorAll('.accordion-item').forEach(el => {
+            el.classList.remove('active');
+        });
+
+        // А затем раскрываем ТОЛЬКО ту ветку, где мы сейчас читаем:
+        let parent = targetLi.closest('.accordion-item');
+        while (parent) {
+            parent.classList.add('active');
+            // Идем выше к родителю родителя (например, от Главы к Разделу)
+            parent = parent.parentElement.closest('.accordion-item');
+        }
+    }
 }
+
+// === ОПТИМИЗАЦИЯ ПАМЯТИ: УПРАВЛЕНИЕ ИСКРАМИ ===
 
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) {

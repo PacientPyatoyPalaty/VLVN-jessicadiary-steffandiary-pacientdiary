@@ -254,10 +254,16 @@ function resizeBook() {
     book.style.transform = `translateX(-50%)`;
 }
 
-// Оставляем слушатели в самом низу
-resizeBook(); // Вызываем сразу при построении DOM
-window.addEventListener('resize', resizeBook);
-setTimeout(resizeBook, 300);
+// === ДЕБАУНС ДЛЯ ИЗМЕНЕНИЯ РАЗМЕРА ЭКРАНА ===
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    // Ждем 150мс после окончания поворота/ресайза, и только потом пересчитываем макет
+    resizeTimer = setTimeout(() => {
+        resizeBook();
+    }, 150); 
+});
+
 
 // === 6 и 7. ЛОГИКА САЙДБАРА, АККОРДЕОНА, МАРШРУТИЗАЦИИ И ЗОН НАВИГАЦИИ ===
     function attachDynamicEvents() {

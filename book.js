@@ -556,30 +556,35 @@ document.getElementById('fullscreen-btn')?.addEventListener('click', () => {
     }
 });
 
-// Галерея
+// === ПЛАВНАЯ ГАЛЕРЕЯ ===
 document.getElementById('open-gallery')?.addEventListener('click', () => {
-    const gallery = document.getElementById('gallery-modal');
-    if (gallery) {
-        gallery.style.display = 'flex';
+    const modal = document.getElementById('gallery-modal');
+    if (modal) {
+        modal.classList.add('active'); // Запускаем плавное появление
     }
 });
 
+// Закрытие по клику
 document.addEventListener('click', function(event) {
-    const gallery = document.getElementById('gallery-modal');
-    if (!gallery || gallery.style.display !== 'flex') return;
-
-    if (event.target.closest('#close-gallery') || 
-        event.target.closest('#close-gallery-bottom') || 
-        event.target.id === 'gallery-modal') {
-        gallery.style.display = 'none';
+    const modal = document.getElementById('gallery-modal');
+    
+    // Проверяем, открыта ли галерея (есть ли у нее класс active)
+    if (!modal || !modal.classList.contains('active')) return;
+    
+    // Закрываем, если кликнули по кнопке "ЗАКРЫТЬ АРХИВ", по верхнему крестику (если он есть) или по пустому фону
+    if (event.target.closest('#close-gallery-bottom') || 
+        event.target.closest('#close-gallery') || 
+        event.target === modal) {
+        modal.classList.remove('active'); // Запускаем плавное исчезновение
     }
 });
 
+// Закрытие по кнопке Escape на клавиатуре (обновлено под плавность)
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' || event.key === 'Esc') {
-        const gallery = document.getElementById('gallery-modal');
-        if (gallery && gallery.style.display === 'flex') {
-            gallery.style.display = 'none';
+        const modal = document.getElementById('gallery-modal');
+        if (modal && modal.classList.contains('active')) {
+            modal.classList.remove('active'); // Запускаем плавное исчезновение
         }
     }
 });

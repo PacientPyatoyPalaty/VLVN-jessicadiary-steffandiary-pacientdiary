@@ -782,21 +782,30 @@ sup {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.95);
+    background-color: rgba(0, 0, 0, 0.95); /* Темный фон */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Чтобы контент можно было скроллить, если он большой */
+    overflow-y: auto;
     
-    z-index: 999999 !important; 
-    
-    display: none; 
-    overflow-y: auto; 
-    backdrop-filter: blur(10px);
-    padding: 60px 5% 100px; 
-    animation: fadeIn 0.8s ease;
+    /* Магия плавности */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+/* Класс для плавного показа */
+.gallery-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* Обертка для центрирования контента */
 .gallery-content {
     max-width: 1200px;
     margin: 0 auto;
+    padding-top: 60px;
     display: flex;
     flex-direction: column;
     align-items: center;
